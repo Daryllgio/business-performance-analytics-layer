@@ -163,7 +163,7 @@ SELECT TOP (50) * FROM gold.report_products  ORDER BY total_sales DESC;
 
 ---
 
-## Example analyses (copy/paste)
+## Example analyses
 
 **Year-over-Year product performance (YoY):**
 
