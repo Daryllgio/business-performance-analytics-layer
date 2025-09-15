@@ -25,6 +25,7 @@ flowchart LR
   G --> V2[gold.report_products]
 ```
 
+
 ```
 bronze  →  raw CSV extracts (CRM & ERP)
 silver  →  cleaned/retyped CSVs (one-to-one with bronze)
