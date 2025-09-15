@@ -248,21 +248,3 @@ WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', ROWTERMINATOR = '0x0a', TABLOCK);
 * Built **two production-grade SQL reporting views** consumed directly by BI.
 * Implemented **YoY/MoM** deltas, **running totals**, **moving averages**, and **customer/product segmentation** purely in SQL.
 * Delivered **KPI dictionary** and clean **data model** others can reuse without touching raw tables.
-
----
-
-## License
-
-MIT — use freely with attribution.
-
----
-
-## Credits
-
-Dataset & inspiration based on a synthetic retail scenario. All SQL written to be vendor-portable but tested with **SQL Server**.
-
----
-
-### Screenshots (optional)
-
-Add screenshots of SSMS or your BI dashboard once you connect to `gold.report_*` views.
