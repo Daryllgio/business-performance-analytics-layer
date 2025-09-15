@@ -15,6 +15,16 @@
 
 ## Data & Architecture
 
+This repo implements the **medallion** pattern in **SQL Server (T-SQL)**:
+
+```mermaid
+flowchart LR
+  B[Bronze (raw CSV)] --> S[Silver (clean & typed)]
+  S --> G[(Gold star schema)]
+  G --> V1[gold.report_customers]
+  G --> V2[gold.report_products]
+```
+
 ```
 bronze  →  raw CSV extracts (CRM & ERP)
 silver  →  cleaned/retyped CSVs (one-to-one with bronze)
