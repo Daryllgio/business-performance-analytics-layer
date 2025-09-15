@@ -231,3 +231,9 @@ WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', ROWTERMINATOR = '0x0a', TABLOCK);
 ```
 
 > Adjust paths and target tables for each CSV. For bronze/silver CSVs, load them into staging then upsert into gold.
+
+---
+
+## Credits
+
+Dataset & inspiration based on a synthetic retail scenario. All SQL written to be vendor-portable but tested with **SQL Server**.
