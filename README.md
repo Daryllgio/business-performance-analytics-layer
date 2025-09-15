@@ -1,21 +1,21 @@
 # business-performance-analytics-layer
 
-**Advanced SQL portfolio project** that builds a miniature data warehouse and two production-ready analytical reports (Customers & Products) using **T-SQL** only. The repo shows how to design bronze/silver/gold layers, engineer KPIs with **window functions & CTEs**, and publish clean **reporting views** that any BI tool can consume.
+**Advanced SQL portfolio project** that builds a miniature data warehouse and two production-ready analytical reports (Customers & Products) using **T-SQL** only. The repo shows how to design bronze/silver/gold layers, engineer KPIs with **window functions & CTEs**, and publish clean **reporting views** any BI tool can consume.
 
 ---
 
-## What this project demonstrates 
+## Highlights
 
-* End-to-end SQL ownership: ingest → model → analyze → publish.
-* Clear warehouse layering (**bronze/silver/gold**) and naming standards.
-* Advanced analytics: trend/change over time, cumulative/running totals, YoY/MoM performance, segmentation, and part-to-whole shares.
-* Production deliverables: `gold.report_customers` and `gold.report_products` views with documented KPIs.
+* End-to-end SQL ownership: ingest → model → analyze → publish
+* Clear warehouse layering (**bronze/silver/gold**) and naming standards
+* Advanced analytics: trend/change over time, cumulative/running totals, YoY/MoM performance, segmentation, part-to-whole shares
+* Production deliverables: `gold.report_customers` and `gold.report_products` views with documented KPIs
 
 ---
 
 ## Data & Architecture
 
-This repo implements the **medallion** pattern in **SQL Server (T-SQL)**:
+This repo implements the **Medallion** pattern in **SQL Server (T-SQL)**:
 
 ```mermaid
 flowchart LR
@@ -24,7 +24,6 @@ flowchart LR
   G --> V1["gold.report_customers"]
   G --> V2["gold.report_products"]
 ```
-
 
 ```
 bronze  →  raw CSV extracts (CRM & ERP)
@@ -47,6 +46,38 @@ gold    →  star schema tables + final reporting views
 
 ---
 
+## Gold ERD (star schema)
+
+```mermaid
+erDiagram
+  gold.dim_customers ||--o{ gold.fact_sales : has
+  gold.dim_products  ||--o{ gold.fact_sales : has
+
+  gold.dim_customers {
+    int customer_key PK
+    string customer_number
+    string customer_name
+    int age
+  }
+  gold.dim_products {
+    int product_key PK
+    string product_name
+    string category
+    string subcategory
+    decimal cost
+  }
+  gold.fact_sales {
+    int order_number
+    date order_date
+    int customer_key FK
+    int product_key FK
+    int quantity
+    decimal sales_amount
+  }
+```
+
+---
+
 ## Key SQL Techniques
 
 * **Window functions**: `SUM() OVER`, `AVG() OVER`, `LAG()`, `ROW_NUMBER()`
@@ -59,7 +90,7 @@ gold    →  star schema tables + final reporting views
 
 ---
 
-## Repo Structure
+## Repository Structure
 
 ```
 datasets/
@@ -104,27 +135,25 @@ scripts/
 
 ## Quickstart
 
-**Prereqs:** SQL Server 2019+ (Express is fine) + SQL Server Management Studio.
+**Prerequisites:** SQL Server 2019+ (Express/Developer) and SQL Server Management Studio (**SSMS**).
+
+**Tested on:** SQL Server **2019/2022** (Developer/Express), **SSMS 20.x**
 
 ### Option A — Restore the ready DB (fastest)
 
-1. Copy `datasets/DataWarehouseAnalytics.bak` to your SQL Server backup folder (e.g. `C:\Program Files\Microsoft SQL Server\<instance>\MSSQL\Backup`).
+1. Copy `datasets/DataWarehouseAnalytics.bak` to your SQL Server backup folder (e.g., `C:\Program Files\Microsoft SQL Server\<instance>\MSSQL\Backup`).
 2. In SSMS: **Databases → Restore Database… → Device → Add** the `.bak` → **OK**.
-3. Confirm you see database **`DataWarehouseAnalytics`** with schemas **`gold`**, etc.
+3. Confirm you see database **`DataWarehouseAnalytics`** with schema **`gold`**.
 
 ### Option B — Create from scripts
 
 1. Run `scripts/00_init_database.sql` (creates DB, schemas, and core tables).
-2. Import the CSVs (SSMS “Import Flat File…” or `BULK INSERT`) into the matching tables.
+2. Import the CSVs (SSMS “Import Flat File…” or `BULK INSERT`) into matching tables.
 3. Run exploration/analysis scripts as needed.
 
-> Either route, finish by running the **report** scripts below.
+### Build the Reports (production views)
 
----
-
-## Build the Reports (production views)
-
-Run these in order after the DB is present:
+> In SSMS and `sqlcmd`, `:r` includes a file; in SSMS you can also just open each script and press **Execute**.
 
 ```sql
 -- Customer 360 report
@@ -143,27 +172,27 @@ SELECT TOP (50) * FROM gold.report_products  ORDER BY total_sales DESC;
 
 ---
 
-## What’s in each report
+## Reports
 
 ### `gold.report_customers`
 
-* **Identity**: customer\_key, customer\_number, customer\_name, age, age\_group
+* **Identity**: `customer_key`, `customer_number`, `customer_name`, `age`, `age_group`
 * **Segmentation**: `customer_segment` (VIP / Regular / New)
 
-  * *VIP*: lifespan ≥ 12 months **and** total\_spend > 5000
-  * *Regular*: lifespan ≥ 12 months **and** total\_spend ≤ 5000
-  * *New*: lifespan < 12 months
+  * **VIP**: `lifespan_months ≥ 12` **and** `total_sales > 5000`
+  * **Regular**: `lifespan_months ≥ 12` **and** `total_sales ≤ 5000`
+  * **New**: `lifespan_months < 12`
 * **Core metrics**:
   `total_orders`, `total_sales`, `total_quantity`, `total_products`,
   `last_order_date`, `lifespan_months`
 * **KPIs**:
   `recency_months` (months since last order),
-  `avg_order_value` (defensive divide-by-zero),
+  `avg_order_value` (guarded),
   `avg_monthly_spend` (lifespan-aware)
 
 ### `gold.report_products`
 
-* **Identity**: product\_key, product\_name, category, subcategory, cost
+* **Identity**: `product_key`, `product_name`, `category`, `subcategory`, `cost`
 * **Segmentation**: `revenue_band` (High / Mid / Low) by total\_sales thresholds
 * **Core metrics**:
   `total_orders`, `total_sales`, `total_quantity`, `total_customers`,
@@ -174,9 +203,43 @@ SELECT TOP (50) * FROM gold.report_products  ORDER BY total_sales DESC;
 
 ---
 
-## Example analyses
+## KPI Dictionary
 
-**Year-over-Year product performance (YoY):**
+### Customers
+
+| KPI                 | Definition                                                                          | Notes            |
+| ------------------- | ----------------------------------------------------------------------------------- | ---------------- |
+| `total_orders`      | `COUNT(DISTINCT order_number)`                                                      | per customer     |
+| `total_sales`       | `SUM(sales_amount)`                                                                 | dataset currency |
+| `total_quantity`    | `SUM(quantity)`                                                                     | units            |
+| `total_products`    | `COUNT(DISTINCT product_key)`                                                       | product breadth  |
+| `last_order_date`   | `MAX(order_date)`                                                                   | —                |
+| `lifespan_months`   | `DATEDIFF(MONTH, MIN(order_date), MAX(order_date))`                                 | floor months     |
+| `recency_months`    | `DATEDIFF(MONTH, last_order_date, GETDATE())`                                       | activity signal  |
+| `avg_order_value`   | `total_sales / NULLIF(total_orders, 0)`                                             | guarded divide   |
+| `avg_monthly_spend` | `CASE WHEN lifespan_months=0 THEN total_sales ELSE total_sales/lifespan_months END` | lifespan-aware   |
+| `customer_segment`  | VIP / Regular / New                                                                 | rules above      |
+
+### Products
+
+| KPI                   | Definition                                                                          | Notes                        |
+| --------------------- | ----------------------------------------------------------------------------------- | ---------------------------- |
+| `total_orders`        | `COUNT(DISTINCT order_number)`                                                      | per product                  |
+| `total_sales`         | `SUM(sales_amount)`                                                                 | —                            |
+| `total_quantity`      | `SUM(quantity)`                                                                     | —                            |
+| `total_customers`     | `COUNT(DISTINCT customer_key)`                                                      | reach                        |
+| `avg_selling_price`   | `total_sales / NULLIF(total_quantity, 0)`                                           | guarded                      |
+| `last_sale_date`      | `MAX(order_date)`                                                                   | —                            |
+| `lifespan_months`     | `DATEDIFF(MONTH, MIN(order_date), MAX(order_date))`                                 | —                            |
+| `avg_order_revenue`   | `total_sales / NULLIF(total_orders, 0)`                                             | —                            |
+| `avg_monthly_revenue` | `CASE WHEN lifespan_months=0 THEN total_sales ELSE total_sales/lifespan_months END` | —                            |
+| `revenue_band`        | High / Mid / Low                                                                    | thresholded on `total_sales` |
+
+---
+
+## Example Analyses
+
+**Year-over-Year product performance (YoY)**
 
 ```sql
 WITH yearly AS (
@@ -229,7 +292,7 @@ ORDER BY recency_months DESC, avg_monthly_spend ASC;
 
 ---
 
-## How to load CSVs (if you don’t restore the .bak)
+## Loading CSVs (if you don’t restore the .bak)
 
 **Import Wizard:** SSMS → Database → Tasks → **Import Flat File** → map each CSV to the matching table.
 
@@ -245,8 +308,16 @@ WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', ROWTERMINATOR = '0x0a', TABLOCK);
 
 ---
 
+## Compatibility
+
+* **SQL Server:** 2019 / 2022
+* **SSMS:** 20.x
+* Works with Express or Developer editions.
+
+---
+
 ## Credits
 
 Dataset & inspiration based on a synthetic retail scenario. All SQL written to be vendor-portable but tested with **SQL Server**.
 
-**Author:** *Daryll Giovanny Bikak mbal*
+**Author:** Daryll Giovanny Bikak Mbal 
