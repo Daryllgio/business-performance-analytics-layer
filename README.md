@@ -19,8 +19,8 @@ This repo implements the **medallion** pattern in **SQL Server (T-SQL)**:
 
 ```mermaid
 flowchart LR
-  B[Bronze (raw CSV)] --> S[Silver (clean & typed)]
-  S --> G[(Gold star schema)]
+  B[Bronze (raw CSV)] --> S[Silver (clean + typed)]
+  S --> G([Gold star schema])
   G --> V1[gold.report_customers]
   G --> V2[gold.report_products]
 ```
