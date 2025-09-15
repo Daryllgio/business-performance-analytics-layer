@@ -231,20 +231,3 @@ WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', ROWTERMINATOR = '0x0a', TABLOCK);
 ```
 
 > Adjust paths and target tables for each CSV. For bronze/silver CSVs, load them into staging then upsert into gold.
-
----
-
-## Conventions & Standards
-
-* **Repo name:** `business-performance-analytics-layer` (all-lowercase, hyphens)
-  — readable, URL-safe, and consistent with common OSS style.
-* **Schemas:** `bronze`/`silver`/`gold` to signal data quality and readiness.
-* **SQL style:** CTEs per step, snake\_case columns, explicit window frames only when needed, `CASE`-based segmentation, defensive math (no divide-by-zero).
-
----
-
-## Talking points (for your portfolio)
-
-* Built **two production-grade SQL reporting views** consumed directly by BI.
-* Implemented **YoY/MoM** deltas, **running totals**, **moving averages**, and **customer/product segmentation** purely in SQL.
-* Delivered **KPI dictionary** and clean **data model** others can reuse without touching raw tables.
