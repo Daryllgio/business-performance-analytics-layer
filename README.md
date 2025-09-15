@@ -50,28 +50,30 @@ gold    →  star schema tables + final reporting views
 
 ```mermaid
 erDiagram
-  gold.dim_customers ||--o{ gold.fact_sales : has
-  gold.dim_products  ||--o{ gold.fact_sales : has
+  dim_customers ||--o{ fact_sales : has
+  dim_products  ||--o{ fact_sales : has
 
-  gold.dim_customers {
-    int customer_key PK
+  dim_customers {
+    int    customer_key PK
     string customer_number
     string customer_name
-    int age
+    int    age
   }
-  gold.dim_products {
-    int product_key PK
-    string product_name
-    string category
-    string subcategory
+
+  dim_products {
+    int     product_key PK
+    string  product_name
+    string  category
+    string  subcategory
     decimal cost
   }
-  gold.fact_sales {
-    int order_number
-    date order_date
-    int customer_key FK
-    int product_key FK
-    int quantity
+
+  fact_sales {
+    int     order_number
+    date    order_date
+    int     customer_key FK
+    int     product_key FK
+    int     quantity
     decimal sales_amount
   }
 ```
