@@ -248,4 +248,5 @@ WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', ROWTERMINATOR = '0x0a', TABLOCK);
 ## Credits
 
 Dataset & inspiration based on a synthetic retail scenario. All SQL written to be vendor-portable but tested with **SQL Server**.
+
 **Author:** *Daryll Giovanny Bikak mbal*
