@@ -91,7 +91,7 @@ scripts/
 
 ---
 
-## Quickstart (5–10 minutes)
+## Quickstart
 
 **Prereqs:** SQL Server 2019+ (Express is fine) + SQL Server Management Studio.
 
