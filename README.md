@@ -4,7 +4,7 @@
 
 ---
 
-## What this project demonstrates (recruiter-friendly)
+## What this project demonstrates 
 
 * End-to-end SQL ownership: ingest → model → analyze → publish.
 * Clear warehouse layering (**bronze/silver/gold**) and naming standards.
